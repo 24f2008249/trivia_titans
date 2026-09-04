@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Idea 1: Terms & Conditions Milestone Scavenger</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: #f0f2f5;
+      color: #333;
+      padding: 24px 16px;
+      display: flex;
+      justify-content: center;
+    }
+    .container {
+      max-width: 960px;
+      width: 100%;
+      background: #fff;
+      padding: 32px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+    header {
+      margin-bottom: 20px;
+    }
+    .nav-links {
+      margin-bottom: 12px;
+      font-size: 0.9rem;
+    }
+    .nav-links a {
+      color: #0066cc;
+      text-decoration: none;
+      margin-right: 15px;
+      font-weight: 500;
+    }
+    .nav-links a:hover {
+      text-decoration: underline;
+    }
+    h1 {
+      font-size: 1.6rem;
+      color: #111;
+      margin-bottom: 6px;
+    }
+    p.sub {
+      color: #666;
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    /* Top Split Layout: Search & Milestone Console */
+    .milestone-console {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 20px;
+      margin: 20px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .console-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .console-title {
+      font-weight: 700;
+      font-size: 1.05rem;
+      color: #1e293b;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .badge-progress {
+      background: #e2e8f0;
+      color: #475569;
+      font-size: 0.82rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 20px;
+    }
+    .badge-progress.complete {
+      background: #dcfce7;
+      color: #15803d;
+    }
+
+    /* Milestone Clue Cards */
+    .milestones-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    @media (max-width: 720px) {
+      .milestones-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .milestone-card {
+      background: #fff;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 10px;
+      transition: all 0.25s;
+    }
+    .milestone-card.unlocked {
+      border-color: #22c55e;
+      background: #f0fdf4;
+    }
+    .milestone-num {
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: #0284c7;
+      display: flex;
+      justify-content: space-between;
+    }
+    .milestone-card.unlocked .milestone-num {
+      color: #16a34a;
+    }
+    .clue-text {
+      font-size: 0.88rem;
+      color: #334155;
+      line-height: 1.45;
+    }
+    .key-input-row {
+      display: flex;
+      gap: 8px;
+    }
+    .key-input {
+      flex: 1;
+      padding: 7px 10px;
+      font-size: 0.85rem;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+    }
+    .key-btn {
+      padding: 7px 12px;
+      background: #0284c7;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .key-btn:hover {
+      background: #0369a1;
+    }
+    .milestone-card.unlocked .key-input-row {
+      display: none;
+    }
+    .unlocked-label {
+      display: none;
+      font-size: 0.85rem;
+      color: #15803d;
+      font-weight: 600;
+    }
+    .milestone-card.unlocked .unlocked-label {
+      display: block;
+    }
+
+    /* Live Search Toolbar */
+    .search-toolbar {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .search-input {
+      flex: 1;
+      padding: 10px 14px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      font-size: 0.9rem;
+    }
+    .search-count {
+      font-size: 0.85rem;
+      color: #64748b;
+      min-width: 90px;
+      text-align: right;
+    }
+
+    /* Huge Terms & Conditions Scrollbox */
+    .terms-viewport {
+      height: 460px;
+      overflow-y: scroll;
+      border: 2px solid #cbd5e1;
+      border-radius: 8px;
+      padding: 24px;
+      background: #fafafa;
+      line-height: 1.7;
+      font-size: 0.9rem;
+      color: #334155;
+      scroll-behavior: smooth;
+      position: relative;
+    }
+    .doc-section {
+      margin-bottom: 28px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .doc-section h3 {
+      font-size: 1.05rem;
+      color: #0f172a;
+      margin-bottom: 8px;
+    }
+    .doc-section p {
+      margin-bottom: 10px;
+    }
+    .doc-section mark {
+      background: #fef08a;
+      padding: 2px 4px;
+      border-radius: 3px;
+    }
+
+    /* Milestone Interactive Seals in Text */
+    .milestone-seal {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: #e0f2fe;
+      border: 1px dashed #0284c7;
+      color: #0369a1;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      margin: 0 3px;
+      transition: all 0.2s;
+    }
+    .milestone-seal:hover {
+      background: #0284c7;
+      color: #fff;
+    }
+    .milestone-seal.claimed {
+      background: #dcfce7;
+      border: 1px solid #16a34a;
+      color: #15803d;
+      cursor: default;
+    }
+
+    /* Secret Hidden Checkmark in deep clause */
+    .target-clause {
+      background: #f8fafc;
+      border: 2px dashed #94a3b8;
+      border-radius: 8px;
+      padding: 16px;
+      margin-top: 14px;
+      transition: all 0.4s ease;
+    }
+    .target-clause.revealed {
+      background: #f0fdf4;
+      border-color: #22c55e;
+      box-shadow: 0 0 20px rgba(34, 197, 94, 0.25);
+    }
+    .hidden-checkmark-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #0066cc;
+      color: #fff;
+      border: none;
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: all 0.2s;
+    }
+    .hidden-checkmark-btn:hover {
+      background: #0052a3;
+      transform: scale(1.03);
+    }
+    .hidden-checkmark-btn.checked {
+      background: #16a34a;
+    }
+
+    /* Final Checkbox & Submit Container */
+    .checkbox-container {
+      margin-top: 20px;
+      padding: 20px;
+      border: 2px solid #cbd5e1;
+      border-radius: 8px;
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transition: all 0.3s;
+    }
+    .checkbox-container.unlocked {
+      border-color: #22c55e;
+      background: #f0fdf4;
+    }
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: #64748b;
+      cursor: not-allowed;
+    }
+    .checkbox-container.unlocked .checkbox-label {
+      color: #0f172a;
+      cursor: pointer;
+    }
+    .checkbox-label input[type="checkbox"] {
+      width: 22px;
+      height: 22px;
+      cursor: inherit;
+    }
+    .status-text {
+      font-size: 0.88rem;
+      color: #64748b;
+    }
+    .submit-btn {
+      padding: 12px 20px;
+      background: #0066cc;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      opacity: 0.5;
+      pointer-events: none;
+      transition: all 0.2s;
+    }
+    .submit-btn.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .submit-btn.active:hover {
+      background: #0052a3;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <div class="nav-links">
+      <strong>Navigation:</strong>
+      <a href="page1.html">Idea 1: T&C Milestone Scavenger</a>
+      <a href="page2.html">Idea 2: Cannon Shooter Checkbox →</a>
+    </div>
+    <h1>Terms & Conditions Milestone Quest</h1>
+    <p class="sub">This Terms of Service is huge. Instead of scrolling blindly, solve the <strong>2 Milestone Clues</strong> using search. Once both milestones are unlocked, the document <strong>automatically scrolls</strong> to the hidden checkmark clause!</p>
+  </header>
+
+  <!-- Milestone Clue Console -->
+  <div class="milestone-console">
+    <div class="console-header">
+      <div class="console-title">
+        <span>🧭</span> Milestone Key Console
+      </div>
+      <div class="badge-progress" id="progressBadge">Milestones: 0 / 2 Unlocked</div>
+    </div>
+
+    <div class="milestones-grid">
+      <!-- Milestone 1 -->
+      <div class="milestone-card" id="m1Card">
+        <div>
+          <div class="milestone-num">
+            <span>Milestone 1: The Cookie Protocol</span>
+            <span id="m1Status">🔒 Locked</span>
+          </div>
+          <p class="clue-text">
+            <strong>Hint:</strong> Search for our secret AI bakery in the document to find Key 1 (the secret cookie flavor codeword).
+          </p>
+        </div>
+        <div class="key-input-row">
+          <input type="text" class="key-input" id="key1Input" placeholder="Enter Key 1 (e.g. quantum-chip)">
+          <button class="key-btn" onclick="submitKey(1)">Unlock</button>
+        </div>
+        <div class="unlocked-label">✓ Key 1 Unlocked: Quantum Chocolate Cookie Verified!</div>
+      </div>
+
+      <!-- Milestone 2 -->
+      <div class="milestone-card" id="m2Card">
+        <div>
+          <div class="milestone-num">
+            <span>Milestone 2: The Pizza Arbitration</span>
+            <span id="m2Status">🔒 Locked</span>
+          </div>
+          <p class="clue-text">
+            <strong>Hint:</strong> Search for our food dispute clause to find Key 2 (the specific weekday mentioned).
+          </p>
+        </div>
+        <div class="key-input-row">
+          <input type="text" class="key-input" id="key2Input" placeholder="Enter Key 2 (e.g. tuesday)">
+          <button class="key-btn" onclick="submitKey(2)">Unlock</button>
+        </div>
+        <div class="unlocked-label">✓ Key 2 Unlocked: Tuesday Protocol Verified!</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Live Search Bar -->
+  <div class="search-toolbar">
+    <input type="text" id="searchInput" class="search-input" placeholder="🔍 Search keywords across all clauses (e.g. 'cookie', 'pizza', 'liability', 'mars', 'key')..." oninput="searchTerms()">
+    <span class="search-count" id="searchCount"></span>
+  </div>
+
+  <!-- HUGE Multi-Section Terms and Conditions -->
+  <div class="terms-viewport" id="termsViewport">
+
+    <div class="doc-section" id="sec-1">
+      <h3>Section 1: Preamble & Scope of Digital Existence</h3>
+      <p>1.1. Welcome to the OmniCloud Universal Services Agreement. These terms and conditions represent the legally binding covenants governing your usage of all sub-atomic, quantum, cloud-based, and cognitive computational assets provided by OmniCloud Inc. and its interplanetary subsidiaries.</p>
+      <p>1.2. By accessing, establishing an HTTP connection, reading via ocular sensors, or caching any portion of this infrastructure, you represent and warrant that you possess the full legal capacity to enter into binding agreements within your jurisdiction, planetary settlement, or orbital zone.</p>
+      <p>1.3. Notice on Human Reading Fatigue: We recognize that approximately ninety-nine point four percent of sentient lifeforms bypass legal documents. Hence, this agreement operates on a cryptographic milestone verification framework.</p>
+    </div>
+
+    <div class="doc-section" id="sec-2">
+      <h3>Section 2: User Identity & Credential Governance</h3>
+      <p>2.1. Account Creation: You agree to provide true, accurate, current, and complete registration credentials. Any attempt to impersonate an autonomous artificial intelligence agent without a valid Level 4 Sentience Certificate will result in immediate session suspension.</p>
+      <p>2.2. Password Hygiene: You are solely responsible for maintaining the confidentiality of your alphanumeric security phrases, biometric hashes, and neural network access keys. We disclaim all liability for compromised credentials caused by post-it notes attached to physical monitors.</p>
+      <p>2.3. Shared Accounts: Multi-tenant usage by more than three biologically distinct individuals on a single individual seat is strictly prohibited without corporate licensing.</p>
+    </div>
+
+    <div class="doc-section" id="sec-3">
+      <h3>Section 3: Data Sovereignty & Telemetry Harvesting</h3>
+      <p>3.1. We respect user privacy within standard commercial parameters. Telemetry packets collected during active sessions include IP addresses, viewport dimensions, mouse acceleration vectors, and general existential angst.</p>
+      <p>3.2. Data Residency: All user data is distributed across redundant datacenters situated in North America, Europe, Singapore, and a subterranean bunker beneath Svalbard.</p>
+    </div>
+
+    <div class="doc-section" id="sec-4">
+      <h3>Section 4: The Sub-Atomic AI Bakery & Cookie Policy</h3>
+      <p>4.1. Browser Cookies: In accordance with our advanced machine learning initiative, all non-essential tracking cookies harvested from your browser sessions are converted into cryptographic telemetry baked by our automated cloud oven.</p>
+      <p>4.2. <strong>Milestone 1 Key Discovery:</strong> The official cryptographic recipe baked into clause 4.2 is designated as <span class="milestone-seal" id="seal1" onclick="claimSeal(1, 'quantum-chip')">KEY-1: [ quantum-chip ]</span>. Entering this codeword into Milestone 1 verifies that you have reviewed our data telemetry baking protocols.</p>
+      <p>4.3. Cookie Opt-Out: Users who prefer raisins or oatmeal may submit an encrypted appeal via carrier pigeon to our compliance headquarters.</p>
+    </div>
+
+    <div class="doc-section" id="sec-5">
+      <h3>Section 5: Acceptable Use & Algorithmic Etiquette</h3>
+      <p>5.1. You shall not deploy scraping bots, automated crawlers, or unauthorized automated scripts capable of generating more than ten thousand requests per millisecond without express written permission.</p>
+      <p>5.2. You shall not reverse-engineer our quantum neural weight arrays or attempt to calculate the ultimate question of life, the universe, and everything using our free tier infrastructure.</p>
+      <p>5.3. Harassment, unauthorized penetration testing, and continuous pinging of our DNS resolvers are grounds for permanent account revocation.</p>
+    </div>
+
+    <div class="doc-section" id="sec-6">
+      <h3>Section 6: Temporal Liability & Time Machine Disclaimers</h3>
+      <p>6.1. If the user invents, rents, or operates a temporal displacement vessel ("Time Machine") and alters historical timestamps prior to signing this agreement, the account shall enter a superposition state.</p>
+      <p>6.2. Paradox Indemnification: The user agrees to indemnify and hold harmless OmniCloud against any grandfather paradoxes, timeline forks, or retroactive billing discrepancies caused by your future or past iterations.</p>
+    </div>
+
+    <div class="doc-section" id="sec-7">
+      <h3>Section 7: Emergency Sustenance & Dietary Arbitration</h3>
+      <p>7.1. Intergalactic Pizza Protocol: Our engineering infrastructure relies on uninterrupted culinary harmony. Placing pineapple slices upon traditional Italian sourdough is recognized as a non-fatal protocol dispute.</p>
+      <p>7.2. <strong>Milestone 2 Key Discovery:</strong> Such culinary transgressions are subject to formal arbitration <span class="milestone-seal" id="seal2" onclick="claimSeal(2, 'tuesday')">KEY-2: [ tuesday ]</span>. Only on alternate Tuesdays shall account access be restricted for pizza violations. Entering this day unlocks Milestone 2.</p>
+    </div>
+
+    <div class="doc-section" id="sec-8">
+      <h3>Section 8: Intellectual Property & Cosmic Licensing</h3>
+      <p>8.1. All trademarks, service marks, pixel shaders, sound effects, and digital checkbox designs hosted on this domain remain the exclusive intellectual property of OmniCloud Global Ltd.</p>
+      <p>8.2. You are granted a limited, revocable, non-exclusive, non-transferable license to click interactive checkboxes for the duration of this session.</p>
+    </div>
+
+    <div class="doc-section" id="sec-9">
+      <h3>Section 9: The Ultimate Verification Vault (Target Checkmark)</h3>
+      <p>9.1. Signature Clause: If you have successfully unlocked Milestone 1 and Milestone 2, you have arrived at the cryptographic conclusion of this document.</p>
+      
+      <!-- The Target Clause Containing the Checkbox Action -->
+      <div class="target-clause" id="targetClause">
+        <h4 style="margin-bottom: 6px; color: #166534;">🎉 Cryptographic Verification Clause 9.2</h4>
+        <p style="font-size: 0.88rem; margin-bottom: 10px;">
+          By clicking the button below or using the master agreement checkbox, you certify that you have completed the milestone verification and accept all terms within this agreement.
+        </p>
+        <button class="hidden-checkmark-btn" id="hiddenCheckmarkBtn" onclick="claimTargetCheckmark()">
+          <span>✓</span> Click Here to Verify & Check Agreement
+        </button>
+      </div>
+    </div>
+
+    <div class="doc-section" id="sec-10">
+      <h3>Section 10: Miscellaneous & Final Execution</h3>
+      <p>10.1. Severability: If any provision of these terms is deemed invalid by a court of competent jurisdiction, the remaining clauses shall continue in full force and effect.</p>
+      <p>10.2. Governing Law: This agreement shall be governed by and construed in accordance with standard maritime cyber-law and orbital treaties.</p>
+    </div>
+
+  </div>
+
+  <!-- Master Checkbox & Form Submission -->
+  <div class="checkbox-container" id="checkboxContainer">
+    <label class="checkbox-label" id="checkboxLabel">
+      <input type="checkbox" id="masterCheckbox" disabled onchange="onMasterToggle()">
+      <span>I have read, verified via milestones, and agree to the Terms and Conditions</span>
+    </label>
+    <div class="status-text" id="statusText">
+      🔒 Checkbox is locked. Complete Milestone 1 & 2 above (or click the seals in the text) to auto-scroll to the signature clause!
+    </div>
+    <button class="submit-btn" id="submitBtn" onclick="submitRegistration()">Submit Registration</button>
+  </div>
+
+</div>
+
+<script>
+  let milestone1Done = false;
+  let milestone2Done = false;
+  let targetVerified = false;
+
+  function submitKey(num) {
+    if (num === 1) {
+      const val = document.getElementById('key1Input').value.trim().toLowerCase();
+      if (val.includes('quantum-chip') || val.includes('quantum') || val.includes('cookie')) {
+        unlockMilestone(1);
+      } else {
+        alert("Incorrect Key 1. Search for 'bakery' or 'cookie' in the Terms to find the key!");
+      }
+    } else if (num === 2) {
+      const val = document.getElementById('key2Input').value.trim().toLowerCase();
+      if (val.includes('tuesday')) {
+        unlockMilestone(2);
+      } else {
+        alert("Incorrect Key 2. Search for 'pizza' or 'arbitration' in the Terms to find the key!");
+      }
+    }
+  }
+
+  function claimSeal(num, keyText) {
+    if (num === 1) {
+      document.getElementById('key1Input').value = keyText;
+      unlockMilestone(1);
+      document.getElementById('seal1').classList.add('claimed');
+    } else if (num === 2) {
+      document.getElementById('key2Input').value = keyText;
+      unlockMilestone(2);
+      document.getElementById('seal2').classList.add('claimed');
+    }
+  }
+
+  function unlockMilestone(num) {
+    if (num === 1 && !milestone1Done) {
+      milestone1Done = true;
+      document.getElementById('m1Card').classList.add('unlocked');
+      document.getElementById('m1Status').textContent = '✓ Unlocked';
+    }
+    if (num === 2 && !milestone2Done) {
+      milestone2Done = true;
+      document.getElementById('m2Card').classList.add('unlocked');
+      document.getElementById('m2Status').textContent = '✓ Unlocked';
+    }
+
+    const count = (milestone1Done ? 1 : 0) + (milestone2Done ? 1 : 0);
+    const badge = document.getElementById('progressBadge');
+    badge.textContent = `Milestones: ${count} / 2 Unlocked`;
+
+    if (count === 2) {
+      badge.classList.add('complete');
+      onBothMilestonesComplete();
+    }
+  }
+
+  function onBothMilestonesComplete() {
+    // AUTOMATIC SCROLL TO THE TARGET CLAUSE!
+    setTimeout(() => {
+      const targetClause = document.getElementById('targetClause');
+      targetClause.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      targetClause.classList.add('revealed');
+
+      document.getElementById('statusText').textContent = "🎯 Both milestones unlocked! Auto-scrolled to Section 9. Click the green button or check the box to finish.";
+      document.getElementById('statusText').style.color = "#15803d";
+    }, 400);
+  }
+
+  function claimTargetCheckmark() {
+    targetVerified = true;
+    const btn = document.getElementById('hiddenCheckmarkBtn');
+    btn.classList.add('checked');
+    btn.innerHTML = "✓ Verified & Signature Captured!";
+
+    // Unlock & check master checkbox
+    const container = document.getElementById('checkboxContainer');
+    const checkbox = document.getElementById('masterCheckbox');
+    const submitBtn = document.getElementById('submitBtn');
+    const statusText = document.getElementById('statusText');
+
+    container.classList.add('unlocked');
+    checkbox.disabled = false;
+    checkbox.checked = true;
+
+    statusText.textContent = "🎉 Verification Complete! Terms accepted.";
+    statusText.style.color = "#15803d";
+    submitBtn.classList.add('active');
+  }
+
+  function onMasterToggle() {
+    const checkbox = document.getElementById('masterCheckbox');
+    const submitBtn = document.getElementById('submitBtn');
+    if (checkbox.checked) {
+      submitBtn.classList.add('active');
+    } else {
+      submitBtn.classList.remove('active');
+    }
+  }
+
+  function submitRegistration() {
+    alert("Form successfully submitted! Terms verified and signed.");
+  }
+
+  // Live Search Tool
+  function searchTerms() {
+    const q = document.getElementById('searchInput').value.toLowerCase().trim();
+    const sections = document.querySelectorAll('.doc-section');
+    const countEl = document.getElementById('searchCount');
+
+    if (!q) {
+      sections.forEach(s => s.style.display = 'block');
+      countEl.textContent = '';
+      return;
+    }
+
+    let matchCount = 0;
+    sections.forEach(s => {
+      const text = s.innerText.toLowerCase();
+      if (text.includes(q)) {
+        s.style.display = 'block';
+        matchCount++;
+      } else {
+        s.style.display = 'none';
+      }
+    });
+
+    countEl.textContent = `${matchCount} section${matchCount === 1 ? '' : 's'} match`;
+  }
+</script>
+
+</body>
+</html>
