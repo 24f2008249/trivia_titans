@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Idea 2: Arcade Cannon Checkbox Arena</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: #f0f2f5;
+      color: #333;
+      padding: 24px 16px;
+      display: flex;
+      justify-content: center;
+    }
+    .container {
+      max-width: 960px;
+      width: 100%;
+      background: #fff;
+      padding: 28px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+    header {
+      margin-bottom: 16px;
+    }
+    .nav-links {
+      margin-bottom: 10px;
+      font-size: 0.9rem;
+    }
+    .nav-links a {
+      color: #0066cc;
+      text-decoration: none;
+      margin-right: 15px;
+      font-weight: 500;
+    }
+    .nav-links a:hover {
+      text-decoration: underline;
+    }
+    h1 {
+      font-size: 1.6rem;
+      color: #111;
+      margin-bottom: 6px;
+    }
+    p.sub {
+      color: #666;
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    /* Game Info & Power-ups Bar */
+    .game-stats-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #0f172a;
+      color: #e2e8f0;
+      padding: 10px 18px;
+      border-radius: 8px 8px 0 0;
+      font-size: 0.88rem;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .stat-pill {
+      background: #1e293b;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-weight: 600;
+    }
+    .stat-pill.highlight {
+      color: #38bdf8;
+    }
+    .stat-pill.power {
+      color: #facc15;
+    }
+
+    /* Enlarged Canvas Arena */
+    .arena-container {
+      border: 2px solid #0f172a;
+      border-radius: 0 0 8px 8px;
+      overflow: hidden;
+      background: #0b1120;
+      position: relative;
+    }
+    canvas {
+      display: block;
+      width: 100%;
+      height: 480px;
+      background: #0b1120;
+      cursor: crosshair;
+    }
+
+    /* Controls bottom bar */
+    .controls-strip {
+      background: #1e293b;
+      color: #cbd5e1;
+      padding: 12px 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.88rem;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .btn-group {
+      display: flex;
+      gap: 8px;
+    }
+    button.action-btn {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 0.88rem;
+      transition: background 0.2s;
+    }
+    .btn-fire {
+      background: #22c55e;
+      color: #052e16;
+    }
+    .btn-fire:hover {
+      background: #16a34a;
+    }
+    .btn-reset {
+      background: #475569;
+      color: #fff;
+    }
+    .btn-reset:hover {
+      background: #334155;
+    }
+
+    /* Real Form Submission Integration */
+    .form-section {
+      margin-top: 20px;
+      padding: 20px;
+      border: 2px solid #cbd5e1;
+      border-radius: 8px;
+      background: #fafafa;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      transition: all 0.3s;
+    }
+    .form-section.checked-success {
+      border-color: #22c55e;
+      background: #f0fdf4;
+    }
+    .form-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 1.05rem;
+      font-weight: 600;
+    }
+    .form-row input[type="checkbox"] {
+      width: 22px;
+      height: 22px;
+      cursor: not-allowed;
+    }
+    .form-status {
+      font-size: 0.88rem;
+      color: #64748b;
+    }
+    button.submit-btn {
+      padding: 12px 20px;
+      background: #0066cc;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      opacity: 0.5;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+    button.submit-btn.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    button.submit-btn.active:hover {
+      background: #0052a3;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <div class="nav-links">
+      <strong>Navigation:</strong>
+      <a href="page1.html">← Idea 1: T&C Milestone Scavenger</a>
+      <a href="page2.html">Idea 2: Arcade Cannon Checkbox</a>
+    </div>
+    <h1>Arcade Cannon Checkbox Arena</h1>
+    <p class="sub">
+      The target checkbox moves <strong>randomly in 2D</strong> inside the arena container. Hit <strong>Bumpers</strong> for trickshots, collect <strong>Power-ups (❄️ Slow-Mo / ✨ Triple-Shot)</strong>, and shoot the moving box to check the agreement!
+    </p>
+  </header>
+
+  <!-- Top Stats Bar -->
+  <div class="game-stats-bar">
+    <div class="stat-pill highlight">🎯 Shots Fired: <span id="shotsCount">0</span></div>
+    <div class="stat-pill" id="scorePill">⭐ Score: <span id="scoreVal">0</span></div>
+    <div class="stat-pill power" id="powerupStatus">⚡ Power-Up: None Active</div>
+    <div class="stat-pill" id="targetStatePill">Status: [ ] Unchecked</div>
+  </div>
+
+  <!-- Enlarged Canvas Arena -->
+  <div class="arena-container">
+    <canvas id="gameCanvas" width="900" height="480"></canvas>
+    
+    <div class="controls-strip">
+      <div>
+        <span>🖱️ Aim: Move mouse cursor | 🚀 Fire: Click canvas or press Space</span>
+      </div>
+      <div class="btn-group">
+        <button class="action-btn btn-fire" onclick="fireCannon()">FIRE CANNON (Space)</button>
+        <button class="action-btn btn-reset" onclick="resetGame()">Reset Arena</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Form integration -->
+  <div class="form-section" id="formSection">
+    <div class="form-row">
+      <input type="checkbox" id="formCheckbox" disabled>
+      <label id="checkboxLabel">I have aimed, fired, and verified the Terms of Service</label>
+    </div>
+    <div class="form-status" id="formStatus">
+      ❌ Agreement is currently unchecked. Score a direct cannon hit on the moving checkbox above!
+    </div>
+    <button class="submit-btn" id="submitBtn" onclick="submitForm()">Submit Verified Registration</button>
+  </div>
+</div>
+
+<script>
+  const canvas = document.getElementById('gameCanvas');
+  const ctx = canvas.getContext('2d');
+
+  // Cannon
+  const cannon = {
+    x: canvas.width / 2,
+    y: canvas.height - 35,
+    angle: -Math.PI / 2,
+    barrelLength: 48,
+    baseRadius: 26
+  };
+
+  // 2D Randomly Moving Target Container Boundary
+  const targetZone = {
+    x: 40,
+    y: 35,
+    width: canvas.width - 80,
+    height: 230
+  };
+
+  // Moving Target Checkbox
+  const target = {
+    x: 200,
+    y: 80,
+    width: 64,
+    height: 64,
+    vx: 3.5,
+    vy: 2.2,
+    isChecked: false,
+    color: '#38bdf8'
+  };
+
+  // Obstacle Bumpers (Bouncy elements)
+  const bumpers = [
+    { x: 260, y: 310, radius: 34, label: "Cookie Policy", color: "#f59e0b" },
+    { x: 640, y: 310, radius: 34, label: "Pop-up Barrier", color: "#ec4899" }
+  ];
+
+  // Power-up Tokens
+  const powerups = [
+    { x: 180, y: 190, radius: 18, type: 'slow', label: '❄️', active: true },
+    { x: 720, y: 190, radius: 18, type: 'triple', label: '✨', active: true }
+  ];
+
+  let currentPower = null; // 'slow' or 'triple'
+  let powerTimer = 0;
+
+  // Game state
+  let projectiles = [];
+  let particles = [];
+  let floatTexts = [];
+  let shotsFired = 0;
+  let score = 0;
+
+  // Mouse aim
+  let mouse = { x: canvas.width / 2, y: 150 };
+
+  canvas.addEventListener('mousemove', (e) => {
+    const rect = canvas.getBoundingClientRect();
+    mouse.x = (e.clientX - rect.left) * (canvas.width / rect.width);
+    mouse.y = (e.clientY - rect.top) * (canvas.height / rect.height);
+
+    cannon.angle = Math.atan2(mouse.y - cannon.y, mouse.x - cannon.x);
+    // Limit angle upwards
+    if (cannon.angle > -0.15) cannon.angle = -0.15;
+    if (cannon.angle < -Math.PI + 0.15) cannon.angle = -Math.PI + 0.15;
+  });
+
+  canvas.addEventListener('click', () => {
+    fireCannon();
+  });
+
+  window.addEventListener('keydown', (e) => {
+    if (e.code === 'Space') {
+      e.preventDefault();
+      fireCannon();
+    }
+  });
+
+  function fireCannon() {
+    if (target.isChecked) return;
+
+    shotsFired++;
+    document.getElementById('shotsCount').textContent = shotsFired;
+
+    const speed = 13;
+    const spawnX = cannon.x + Math.cos(cannon.angle) * cannon.barrelLength;
+    const spawnY = cannon.y + Math.sin(cannon.angle) * cannon.barrelLength;
+
+    if (currentPower === 'triple') {
+      // 3 Spread shots
+      [-0.18, 0, 0.18].forEach(offsetAngle => {
+        const a = cannon.angle + offsetAngle;
+        projectiles.push({
+          x: spawnX,
+          y: spawnY,
+          vx: Math.cos(a) * speed,
+          vy: Math.sin(a) * speed,
+          life: 180
+        });
+      });
+    } else {
+      // Single shot
+      projectiles.push({
+        x: spawnX,
+        y: spawnY,
+        vx: Math.cos(cannon.angle) * speed,
+        vy: Math.sin(cannon.angle) * speed,
+        life: 180
+      });
+    }
+  }
+
+  function activatePowerup(type) {
+    currentPower = type;
+    powerTimer = 350; // ~6 seconds
+
+    const status = document.getElementById('powerupStatus');
+    if (type === 'slow') {
+      status.textContent = '❄️ Slow-Mo Active! (Target slowed)';
+      addFloatText("SLOW-MO ACTIVATED!", target.x, target.y - 20, '#38bdf8');
+    } else if (type === 'triple') {
+      status.textContent = '✨ Triple Shot Active! (3x Checkmarks)';
+      addFloatText("TRIPLE SHOT!", cannon.x, cannon.y - 60, '#facc15');
+    }
+  }
+
+  function addFloatText(text, x, y, color) {
+    floatTexts.push({ text, x, y, vy: -1.2, opacity: 1, color });
+  }
+
+  function onTargetHit() {
+    target.isChecked = true;
+    score += 500;
+    document.getElementById('scoreVal').textContent = score;
+    document.getElementById('targetStatePill').textContent = "Status: [✓] Checked!";
+    document.getElementById('targetStatePill').style.color = "#22c55e";
+
+    addFloatText("+500 CHECKBOX CHECKED!", target.x + 30, target.y - 20, '#22c55e');
+
+    // Confetti explosion
+    for (let i = 0; i < 50; i++) {
+      particles.push({
+        x: target.x + target.width / 2,
+        y: target.y + target.height / 2,
+        vx: (Math.random() - 0.5) * 12,
+        vy: (Math.random() - 0.5) * 12,
+        color: ['#22c55e', '#38bdf8', '#f59e0b', '#ec4899', '#fff'][Math.floor(Math.random() * 5)],
+        size: Math.random() * 8 + 4,
+        life: 1
+      });
+    }
+
+    // Form integration update
+    const formSection = document.getElementById('formSection');
+    const formCheckbox = document.getElementById('formCheckbox');
+    const formStatus = document.getElementById('formStatus');
+    const submitBtn = document.getElementById('submitBtn');
+
+    formSection.classList.add('checked-success');
+    formCheckbox.checked = true;
+    formStatus.innerHTML = "🎉 <strong>DIRECT HIT!</strong> The Terms of Service checkbox is verified and stamped.";
+    formStatus.style.color = "#15803d";
+    submitBtn.classList.add('active');
+  }
+
+  function resetGame() {
+    target.isChecked = false;
+    target.x = 200;
+    target.y = 80;
+    target.vx = 3.5;
+    target.vy = 2.2;
+    projectiles = [];
+    particles = [];
+    floatTexts = [];
+    currentPower = null;
+    powerTimer = 0;
+    shotsFired = 0;
+    score = 0;
+
+    powerups.forEach(p => p.active = true);
+
+    document.getElementById('shotsCount').textContent = '0';
+    document.getElementById('scoreVal').textContent = '0';
+    document.getElementById('powerupStatus').textContent = '⚡ Power-Up: None Active';
+    document.getElementById('targetStatePill').textContent = 'Status: [ ] Unchecked';
+    document.getElementById('targetStatePill').style.color = '#e2e8f0';
+
+    document.getElementById('formCheckbox').checked = false;
+    document.getElementById('formSection').classList.remove('checked-success');
+    document.getElementById('formStatus').innerHTML = "❌ Agreement is currently unchecked. Score a direct cannon hit on the moving checkbox above!";
+    document.getElementById('formStatus').style.color = "#64748b";
+    document.getElementById('submitBtn').classList.remove('active');
+  }
+
+  function submitForm() {
+    alert("Form submitted successfully! Checkbox verified via Cannon Shooter.");
+  }
+
+  // Physics & Game Loop
+  function update() {
+    // 1. Target 2D Random Movement inside Boundary Container
+    if (!target.isChecked) {
+      let speedMultiplier = (currentPower === 'slow') ? 0.4 : 1.0;
+
+      // Small random drift change
+      if (Math.random() < 0.02) {
+        target.vx += (Math.random() - 0.5) * 0.8;
+        target.vy += (Math.random() - 0.5) * 0.8;
+      }
+
+      // Clamp velocities
+      target.vx = Math.max(-5, Math.min(5, target.vx));
+      target.vy = Math.max(-4, Math.min(4, target.vy));
+
+      target.x += target.vx * speedMultiplier;
+      target.y += target.vy * speedMultiplier;
+
+      // Bounce within targetZone container
+      if (target.x <= targetZone.x) {
+        target.x = targetZone.x;
+        target.vx *= -1;
+      } else if (target.x + target.width >= targetZone.x + targetZone.width) {
+        target.x = targetZone.x + targetZone.width - target.width;
+        target.vx *= -1;
+      }
+
+      if (target.y <= targetZone.y) {
+        target.y = targetZone.y;
+        target.vy *= -1;
+      } else if (target.y + target.height >= targetZone.y + targetZone.height) {
+        target.y = targetZone.y + targetZone.height - target.height;
+        target.vy *= -1;
+      }
+    }
+
+    // 2. Power-up Timer
+    if (powerTimer > 0) {
+      powerTimer--;
+      if (powerTimer <= 0) {
+        currentPower = null;
+        document.getElementById('powerupStatus').textContent = '⚡ Power-Up: None Active';
+      }
+    }
+
+    // 3. Projectiles movement & collision
+    for (let i = projectiles.length - 1; i >= 0; i--) {
+      const p = projectiles[i];
+      p.x += p.vx;
+      p.y += p.vy;
+      p.life--;
+
+      // Check collision with Target Box
+      if (!target.isChecked &&
+          p.x >= target.x && p.x <= target.x + target.width &&
+          p.y >= target.y && p.y <= target.y + target.height) {
+        onTargetHit();
+        projectiles.splice(i, 1);
+        continue;
+      }
+
+      // Check collision with Bumpers (Bounce physics)
+      bumpers.forEach(b => {
+        const dx = p.x - b.x;
+        const dy = p.y - b.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < b.radius + 10) {
+          // Ricochet
+          const normalX = dx / dist;
+          const normalY = dy / dist;
+          const dot = p.vx * normalX + p.vy * normalY;
+          p.vx = (p.vx - 2 * dot * normalX) * 1.05;
+          p.vy = (p.vy - 2 * dot * normalY) * 1.05;
+          p.x = b.x + normalX * (b.radius + 12);
+          p.y = b.y + normalY * (b.radius + 12);
+
+          score += 50;
+          document.getElementById('scoreVal').textContent = score;
+          addFloatText("+50 TRICKSHOT!", b.x, b.y - 20, b.color);
+        }
+      });
+
+      // Check collision with Power-up Tokens
+      powerups.forEach(pow => {
+        if (pow.active) {
+          const dx = p.x - pow.x;
+          const dy = p.y - pow.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < pow.radius + 12) {
+            pow.active = false;
+            activatePowerup(pow.type);
+            // Respawn powerup after 10s
+            setTimeout(() => pow.active = true, 10000);
+          }
+        }
+      });
+
+      // Wall bounce for checkmark projectiles
+      if (p.x <= 10 || p.x >= canvas.width - 10) p.vx *= -1;
+      if (p.y <= 10) p.vy *= -1;
+
+      // Remove expired bullets
+      if (p.life <= 0 || p.y > canvas.height) {
+        projectiles.splice(i, 1);
+      }
+    }
+
+    // 4. Update particles
+    for (let i = particles.length - 1; i >= 0; i--) {
+      const pt = particles[i];
+      pt.x += pt.vx;
+      pt.y += pt.vy;
+      pt.life -= 0.02;
+      if (pt.life <= 0) particles.splice(i, 1);
+    }
+
+    // 5. Update floating texts
+    for (let i = floatTexts.length - 1; i >= 0; i--) {
+      const ft = floatTexts[i];
+      ft.y += ft.vy;
+      ft.opacity -= 0.015;
+      if (ft.opacity <= 0) floatTexts.splice(i, 1);
+    }
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Draw Target 2D Container Boundary Zone
+    ctx.save();
+    ctx.strokeStyle = 'rgba(56, 189, 248, 0.25)';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([8, 8]);
+    ctx.strokeRect(targetZone.x, targetZone.y, targetZone.width, targetZone.height);
+    ctx.fillStyle = 'rgba(56, 189, 248, 0.03)';
+    ctx.fillRect(targetZone.x, targetZone.y, targetZone.width, targetZone.height);
+    
+    // Label for container zone
+    ctx.fillStyle = 'rgba(148, 163, 184, 0.5)';
+    ctx.font = '11px sans-serif';
+    ctx.fillText('TARGET FLIGHT ZONE (RANDOM 2D MOTION)', targetZone.x + 12, targetZone.y + 18);
+    ctx.restore();
+
+    // Draw Aim Line
+    ctx.save();
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+    ctx.setLineDash([6, 6]);
+    ctx.beginPath();
+    ctx.moveTo(cannon.x, cannon.y);
+    ctx.lineTo(cannon.x + Math.cos(cannon.angle) * 450, cannon.y + Math.sin(cannon.angle) * 450);
+    ctx.stroke();
+    ctx.restore();
+
+    // Draw Obstacle Bumpers
+    bumpers.forEach(b => {
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(b.x, b.y, b.radius, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(30, 41, 59, 0.85)';
+      ctx.fill();
+      ctx.strokeStyle = b.color;
+      ctx.lineWidth = 4;
+      ctx.stroke();
+
+      // Label
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 10px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(b.label, b.x, b.y);
+      ctx.restore();
+    });
+
+    // Draw Power-up Tokens
+    powerups.forEach(pow => {
+      if (pow.active) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(pow.x, pow.y, pow.radius, 0, Math.PI * 2);
+        ctx.fillStyle = (pow.type === 'slow') ? 'rgba(56, 189, 248, 0.2)' : 'rgba(250, 204, 21, 0.2)';
+        ctx.fill();
+        ctx.strokeStyle = (pow.type === 'slow') ? '#38bdf8' : '#facc15';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        ctx.font = '16px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(pow.label, pow.x, pow.y);
+        ctx.restore();
+      }
+    });
+
+    // Draw Moving Target Checkbox Box
+    ctx.save();
+    if (target.isChecked) {
+      ctx.fillStyle = '#22c55e';
+      ctx.strokeStyle = '#fff';
+      ctx.lineWidth = 4;
+      ctx.fillRect(target.x, target.y, target.width, target.height);
+      ctx.strokeRect(target.x, target.y, target.width, target.height);
+
+      ctx.fillStyle = '#052e16';
+      ctx.font = 'bold 38px Arial';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('✓', target.x + target.width / 2, target.y + target.height / 2);
+    } else {
+      ctx.fillStyle = '#1e293b';
+      ctx.strokeStyle = (currentPower === 'slow') ? '#38bdf8' : '#22c55e';
+      ctx.lineWidth = 3;
+      ctx.fillRect(target.x, target.y, target.width, target.height);
+      ctx.strokeRect(target.x, target.y, target.width, target.height);
+
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = 'bold 11px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('TARGET', target.x + target.width / 2, target.y + target.height / 2 - 4);
+      ctx.fillText('[  ]', target.x + target.width / 2, target.y + target.height / 2 + 12);
+    }
+    ctx.restore();
+
+    // Draw Flying Projectiles (Checkmarks)
+    projectiles.forEach(p => {
+      ctx.save();
+      ctx.fillStyle = '#22c55e';
+      ctx.font = 'bold 24px Arial';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('✓', p.x, p.y);
+      ctx.restore();
+    });
+
+    // Draw Floating Text Messages
+    floatTexts.forEach(ft => {
+      ctx.save();
+      ctx.globalAlpha = ft.opacity;
+      ctx.fillStyle = ft.color;
+      ctx.font = 'bold 14px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(ft.text, ft.x, ft.y);
+      ctx.restore();
+    });
+
+    // Draw Particles
+    particles.forEach(pt => {
+      ctx.save();
+      ctx.globalAlpha = pt.life;
+      ctx.fillStyle = pt.color;
+      ctx.fillRect(pt.x, pt.y, pt.size, pt.size);
+      ctx.restore();
+    });
+
+    // Draw Cannon Barrel & Dome
+    ctx.save();
+    ctx.translate(cannon.x, cannon.y);
+    ctx.rotate(cannon.angle);
+    ctx.fillStyle = '#475569';
+    ctx.strokeStyle = '#94a3b8';
+    ctx.lineWidth = 2;
+    ctx.fillRect(0, -14, cannon.barrelLength, 28);
+    ctx.strokeRect(0, -14, cannon.barrelLength, 28);
+
+    // Green tip
+    ctx.fillStyle = '#22c55e';
+    ctx.fillRect(cannon.barrelLength - 6, -16, 6, 32);
+    ctx.restore();
+
+    // Base Pivot
+    ctx.beginPath();
+    ctx.arc(cannon.x, cannon.y, cannon.baseRadius, 0, Math.PI * 2);
+    ctx.fillStyle = '#334155';
+    ctx.fill();
+    ctx.strokeStyle = '#64748b';
+    ctx.lineWidth = 3;
+    ctx.stroke();
+
+    ctx.fillStyle = '#22c55e';
+    ctx.font = 'bold 16px Arial';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('✓', cannon.x, cannon.y);
+  }
+
+  function gameLoop() {
+    update();
+    draw();
+    requestAnimationFrame(gameLoop);
+  }
+
+  gameLoop();
+</script>
+
+</body>
+</html>
